@@ -112,6 +112,20 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'dsn' => env('MONGO_DB_URI'),
+            'database' => env('MONGO_DB_DATABASE', 'laravel'),
+            'options' => [
+                'maxPoolSize' => 20,
+                'w' => 'majority',
+            ],
+
+            // 'driver_options' => [
+            //     'serverApi' => 1,
+            // ],
+        ],
+
     ],
 
     /*
