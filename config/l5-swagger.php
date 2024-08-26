@@ -62,7 +62,9 @@ return [
             'middleware' => [
                 'api' => [],
                 'asset' => [],
-                'docs' => [],
+                'docs' => [
+                    \App\Http\Middleware\SwaggerAuth::class,
+                ],
                 'oauth2_callback' => [],
             ],
 
