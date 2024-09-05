@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Handler\MongoDBHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -52,10 +53,15 @@ return [
 
     'channels' => [
 
+//        'stack' => [
+//            'driver' => 'stack',
+//            'channels' => explode(',', env('LOG_STACK', 'single')),
+//            'ignore_exceptions' => false,
+//        ],
+
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', env('LOG_STACK', 'single')),
-            'ignore_exceptions' => false,
+            'channels' => ['mongodb'],
         ],
 
         'single' => [
@@ -126,6 +132,24 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+//        'mongodb' => [
+//            'driver' => 'monolog',
+//            'handler' => MongoDBHandler::class,
+//            'with' => [
+//                'mongo' => new MongoDB\Client(env('MONGO_DB_URI')),
+//                'database' => env('MONGO_DB_DATABASE', 'laravel'),
+//                'collection' => 'logs',
+//            ],
+//            'level' => 'debug',
+//        ],
+
+        'mongodb' => [
+            'driver' => 'custom',
+            'via' => App\Logging\MongoLogger::class,
+            'level' => 'debug',
+        ],
+
 
     ],
 
