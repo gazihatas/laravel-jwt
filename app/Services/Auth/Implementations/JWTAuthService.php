@@ -89,4 +89,21 @@ class JWTAuthService implements JWTAuthInterface
             password: ''
         );
     }
+
+
+    public function findOrCreateSocialUser(UserData $userData): UserData
+    {
+        $existingUser = $this->userRepository->findByEmail($userData->email);
+
+        if ($existingUser) {
+            return new UserData(
+                id: $existingUser->id,
+                name: $existingUser->name,
+                email: $existingUser->email,
+                password: ''
+            );
+        }
+
+        return $this->userRepository->create($userData);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Data\UserData;
 use App\Enums\LogLevel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
@@ -9,7 +10,9 @@ use App\Http\Requests\Api\Auth\RegisterRequest;
 use App\Services\Auth\Contracts\JWTAuthInterface;
 use App\Services\Log\Contracts\LogServiceInterface;
 use App\Traits\ApiResponseTrait;
+use Exception;
 use Illuminate\Support\Facades\Log;
+use Laravel\Socialite\Facades\Socialite;
 
 /**
  * @OA\Schema(
@@ -255,5 +258,46 @@ class AuthController extends Controller
 
         return $this->errorResponse('Unable to authenticate user.', [], 401);
     }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        $user = Socialite::driver('google')->stateless()->user();
+        return $this->handleSocialLogin($user);
+    }
+
+
+    public function redirectToFacebook()
+    {
+        return Socialite::driver('facebook')->redirect();
+    }
+
+    public function handleFacebookCallback()
+    {
+        $user = Socialite::driver('facebook')->stateless()->user();
+        return $this->handleSocialLogin($user);
+    }
+
+
+    protected function handleSocialLogin($socialUser)
+    {
+        $userData = new UserData(id: null,name: $socialUser->getName(),email: $socialUser->getEmail(),password: '');
+
+        $user = $this->authService->findOrCreateSocialUser($userData);
+
+        try {
+            $token = $this->authService->login(['email' => $user->email]);
+        } catch (Exception $e) {
+            return $this->errorResponse('Token creation failed: ' . $e->getMessage(), [], 500);
+        }
+
+        return $this->successResponse($token, 'User logged in successfully');
+    }
+
+
 
 }
