@@ -16,7 +16,8 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
+    'log' => env('LOG_DB', 'mongodb'),
 
     /*
     |--------------------------------------------------------------------------
@@ -121,9 +122,7 @@ return [
                 'w' => 'majority',
             ],
 
-            // 'driver_options' => [
-            //     'serverApi' => 1,
-            // ],
+
         ],
 
     ],

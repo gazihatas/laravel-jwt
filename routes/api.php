@@ -1,17 +1,19 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\LogController;
 use App\Http\Controllers\V1\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => 'api','prefix' => 'v1'], function () {
+Route::group(['middleware' => ['api','add.headers'],'prefix' => 'v1'], function () {
 
     Route::group(['prefix' => 'auth'], function () {
         Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
-        Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+        Route::post('/login', [AuthController::class, 'login'])->name('login');
         Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('auth.logout');
         Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api')->name('auth.refresh');
+        Route::get('/verify', [AuthController::class, 'verify'])->middleware('auth:api');
     });
 
     Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function () {
@@ -22,5 +24,12 @@ Route::group(['middleware' => 'api','prefix' => 'v1'], function () {
         Route::get('/me', [UserController::class, 'me'])->name('users.me');
     });
 
+    Route::group(['prefix' => 'logs', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [LogController::class, 'index']);
+        Route::get('/{id}', [LogController::class, 'show'])->name('logs.show');
+        Route::put('/{id}', [LogController::class, 'update'])->name('logs.update');
+        Route::delete('/{id}', [LogController::class, 'destroy'])->name('logs.destroy');
+        Route::get('/me', [LogController::class, 'me'])->name('logs.me');
+    });
 
 });

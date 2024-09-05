@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Enums\LogLevel;
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Api\Auth\LoginRequest;
+use App\Http\Requests\Api\Auth\RegisterRequest;
+use App\Services\Auth\Contracts\JWTAuthInterface;
+use App\Services\Log\Contracts\LogServiceInterface;
+use App\Traits\ApiResponseTrait;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @OA\Schema(
@@ -23,6 +27,17 @@ use Illuminate\Support\Facades\Validator;
  */
 class AuthController extends Controller
 {
+    use ApiResponseTrait;
+    protected JWTAuthInterface $authService;
+    protected LogServiceInterface $logService;
+
+    public function __construct(JWTAuthInterface $authService,LogServiceInterface $logService)
+    {
+        $this->authService = $authService;
+        $this->logService = $logService;
+    }
+
+
     /**
      * @OA\Post(
      *     path="/api/v1/auth/register",
@@ -62,35 +77,16 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function register(Request $request) {
-        $validator = Validator::make(request()->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed|min:8',
+    public function register(RegisterRequest $request)
+    {
+        $userData = $this->authService->register($request->validated());
+
+        $this->logService->log(LogLevel::INFO, 'New user registered', [
+            'user_id' => $userData->id,
+            'email' => $userData->email,
         ]);
 
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        //create user
-        $user = User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => bcrypt($request->password)
-        ]);
-
-        if($user) {
-            return response()->json([
-                'success' => true,
-                'user'    => $user,
-            ], 201);
-        }
-
-        //return JSON process insert failed
-        return response()->json([
-            'success' => false,
-        ], 409);
+        return $this->successResponse($userData->toArray(), 'User successfully registered', 201);
     }
 
     /**
@@ -124,20 +120,33 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function login()
+    public function login(LoginRequest $request)
     {
-        $credentials = request(['email', 'password']);
+        $credentials = $request->only('email', 'password');
+        $result = $this->authService->login($credentials);
 
-        if (!auth()->validate($credentials)) {
-            return response()->json(['error' => 'Invalid credentials'], 422);
+        if (isset($result['error'])) {
+//            $this->logService->log(LogLevel::WARNING, 'Failed login attempt', [
+//                'email' => $credentials['email'],
+//            ]);
+
+            Log::channel('mongodb')->warning('Failed login attempt', [
+                'email' => $credentials['email'],
+            ]);
+            return $this->errorResponse($result['message'], $result['status']);
         }
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+//        $this->logService->log(LogLevel::INFO, 'User logged in', [
+//            'user_id' => $result['user']['id'],
+//            'email' => $result['user']['email'],
+//        ]);
 
-        $refreshToken = auth()->refresh();
-        return $this->respondWithToken($token,$refreshToken);
+        Log::channel('mongodb')->info('User logged in', [
+            'user_id' => $result['user']['id'],
+            'email' => $result['user']['email'],
+        ]);
+
+        return $this->successResponse($result, 'User logged in successfully');
     }
 
     /**
@@ -157,9 +166,17 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        $user = auth()->user();
+        $this->authService->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        if ($user) {
+            $this->logService->log(LogLevel::INFO, 'User logged out', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
+        }
+
+        return $this->successResponse(null, 'Successfully logged out');
     }
 
     /**
@@ -181,16 +198,62 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        $user = auth()->user();
+        $result = $this->authService->refresh();
+
+        if (isset($result['error'])) {
+            $this->logService->log(LogLevel::WARNING, 'Token refresh failed', [
+                'user_id' => $user ? $user->id : 'N/A',
+                'error' => $result['error'],
+            ]);
+
+            return $this->errorResponse($result['error'], [], $result['status']);
+        }
+
+        $this->logService->log(LogLevel::INFO, 'Token refreshed', [
+            'user_id' => $user ? $user->id : 'N/A',
+        ]);
+
+        return $this->successResponse($result, 'Token refreshed successfully');
     }
 
-    protected function respondWithToken($token,$refreshToken)
+    /**
+     * @OA\Get(
+     *     path="/api/v1/auth/verify",
+     *     summary="Verify authenticated user",
+     *     tags={"Authentication"},
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User is authenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", example="johndoe@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Unable to authenticate user.")
+     *         )
+     *     )
+     * )
+     */
+    public function verify()
     {
-        return response()->json([
-            'access_token' => $token,
-            'refresh_token'=>$refreshToken,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
+        $user = auth()->user();
+
+        if ($user) {
+            $this->logService->log(LogLevel::INFO, 'User authenticated', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
+            return $this->successResponse($user, 'User is authenticated.');
+        }
+
+        return $this->errorResponse('Unable to authenticate user.', [], 401);
     }
+
 }

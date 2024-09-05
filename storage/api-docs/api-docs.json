@@ -12,6 +12,12 @@
         },
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "https://exam.test/",
+            "description": "API Server"
+        }
+    ],
     "paths": {
         "/api/v1/auth/register": {
             "post": {
@@ -246,6 +252,62 @@
                                         "expires_in": {
                                             "type": "integer",
                                             "example": 3600
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/verify": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Verify authenticated user",
+                "operationId": "d6af7b5e8e9986e44cec2988b09eea13",
+                "responses": {
+                    "200": {
+                        "description": "User is authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "johndoe@example.com"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unable to authenticate user."
                                         }
                                     },
                                     "type": "object"
@@ -546,7 +608,7 @@
     "tags": [
         {
             "name": "Authentication",
-            "description": "Authentication"
+            "description": "API Endpoints for Authentication"
         },
         {
             "name": "Users",
