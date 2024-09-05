@@ -14,6 +14,12 @@ Route::group(['middleware' => ['api','add.headers'],'prefix' => 'v1'], function 
         Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('auth.logout');
         Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api')->name('auth.refresh');
         Route::get('/verify', [AuthController::class, 'verify'])->middleware('auth:api');
+
+        Route::get('/login/google', [AuthController::class, 'redirectToGoogle']);
+        Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback']);
+
+        Route::get('/login/facebook', [AuthController::class, 'redirectToFacebook']);
+        Route::get('/login/facebook/callback', [AuthController::class, 'handleFacebookCallback']);
     });
 
     Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function () {
