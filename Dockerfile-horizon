@@ -1,0 +1,26 @@
+FROM php:8.3-fpm-alpine
+LABEL authors="gazihatas"
+
+RUN apk add --no-cache \
+    supervisor \
+    zip \
+    unzip \
+    git \
+    curl \
+    autoconf \
+    g++ \
+    make
+
+RUN docker-php-ext-install pcntl
+
+RUN pecl install redis && docker-php-ext-enable redis
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+USER www-data
+
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
