@@ -7,6 +7,5 @@ Route::get('/', function () {
 });
 
 Route::get('/phpinfo', function () {
-    // phpinfo() çıktısını göstermek için
     return response()->make(phpinfo(), 200, ['Content-Type' => 'text/html']);
 });

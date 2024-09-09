@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://exam.test/",
+            "url": "https://api.dev.com/",
             "description": "API Server"
         }
     ],

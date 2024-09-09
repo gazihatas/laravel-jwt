@@ -61,7 +61,8 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['mongodb'],
+            'channels' => ['single','mongodb'],
+            'ignore_exceptions' => false,
         ],
 
         'single' => [
