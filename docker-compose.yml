@@ -27,6 +27,9 @@ services:
             - ./:/var/www/html
         expose:
             - "9000"
+        environment:
+            - PUID=1000
+            - PGID=1000
         networks:
             - app-network
     horizon:
