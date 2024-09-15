@@ -169,4 +169,26 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deleted successfully']);
     }
+
+    /**
+     * Kullanıcıya rol atama işlemi.
+     */
+    public function assignRoleToUser(Request $request, int $userId)
+    {
+        $request->validate([
+            'role' => 'required|string|exists:roles,name',
+        ]);
+
+        try {
+            $user = User::findOrFail($userId);
+            $role = $request->input('role');
+
+            $user->assignRole($role);  // Spatie HasRoles trait'i ile rol atama
+
+            return $this->successResponse(null, 'Role assigned to user successfully');
+        } catch (\Exception $e) {
+            Log::error('Error assigning role to user: ' . $e->getMessage());
+            return $this->errorResponse('Failed to assign role to user');
+        }
+    }
 }

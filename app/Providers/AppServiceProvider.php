@@ -10,6 +10,10 @@ use App\Services\Auth\Contracts\JWTAuthInterface;
 use App\Services\Auth\Implementations\JWTAuthService;
 use App\Services\Log\Contracts\LogServiceInterface;
 use App\Services\Log\Implementations\LogService;
+use App\Services\Permission\Contracts\PermissionServiceInterface;
+use App\Services\Permission\Implementations\PermissionService;
+use App\Services\Role\Contracts\RoleServiceInterface;
+use App\Services\Role\Implementations\RoleService;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(JWTAuthInterface::class,JWTAuthService::class);
+
+        $this->app->bind(RoleServiceInterface::class,RoleService::class);
+        $this->app->bind(PermissionServiceInterface::class,PermissionService::class);
 
         $this->app->bind(LogServiceInterface::class, function (Application $app) {
             return new LogService($app->make(LogRepositoryInterface::class));
