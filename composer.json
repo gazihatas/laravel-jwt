@@ -12,6 +12,7 @@
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
         "mongodb/laravel-mongodb": "^4.7",
+        "spatie/laravel-permission": "^6.9",
         "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {

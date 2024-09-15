@@ -6,4 +6,5 @@ return [
     App\Providers\RepositoryServiceProvider::class,
     L5Swagger\L5SwaggerServiceProvider::class,
     MongoDB\Laravel\MongoDBServiceProvider::class,
+    Spatie\Permission\PermissionServiceProvider::class,
 ];

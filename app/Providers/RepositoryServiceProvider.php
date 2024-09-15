@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\Permission\Contracts\PermissionRepositoryInterface;
+use App\Repositories\Permission\Implementations\PostgreSQLPermissionRepository;
+use App\Repositories\Role\Contracts\RoleRepositoryInterface;
+use App\Repositories\Role\Implementations\PostgreSQLRoleRepository;
 use App\Repositories\User\Contracts\UserRepositoryInterface;
 use App\Repositories\User\Implementations\PostgreSQLUserRepository;
 use Exception;
@@ -32,6 +36,9 @@ class RepositoryServiceProvider extends ServiceProvider
             throw new Exception("Unsupported database connection: " . $connection);
 
         });
+
+        $this->app->bind(RoleRepositoryInterface::class, PostgreSQLRoleRepository::class);
+        $this->app->bind(PermissionRepositoryInterface::class, PostgreSQLPermissionRepository::class);
 
     }
 
