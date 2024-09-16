@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Role\Contracts;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Role;
 
@@ -20,4 +21,6 @@ interface RoleRepositoryInterface
     public function assignPermission(int $roleId, string $permission): bool;
 
     public function deleteMultipleRoles(array $roleIds): bool;
+
+    public function getQueryForRoles():Builder;
 }

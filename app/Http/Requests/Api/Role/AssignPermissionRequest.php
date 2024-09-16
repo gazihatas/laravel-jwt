@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\Role;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class AssignPermissionRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class AssignPermissionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Auth::check();
     }
 
     /**
