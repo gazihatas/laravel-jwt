@@ -3,6 +3,7 @@
 namespace App\Repositories\Role\Implementations;
 
 use App\Repositories\Role\Contracts\RoleRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Role;
 
@@ -53,5 +54,10 @@ class PostgreSQLRoleRepository implements RoleRepositoryInterface
     public function deleteMultipleRoles(array $roleIds): bool
     {
         return Role::whereIn('id', $roleIds)->delete();
+    }
+
+    public function getQueryForRoles(): Builder
+    {
+        return Role::query();
     }
 }

@@ -23,7 +23,7 @@ Route::group(['middleware' => ['api','add.headers'],'prefix' => 'v1'], function 
         Route::get('/login/facebook/callback', [AuthController::class, 'handleFacebookCallback']);
     });
 
-    Route::apiResource('roles',RoleController::class)->middleware('auth:api');
+    Route::apiResource('roles',RoleController::class);//->middleware('auth:api');
     Route::post('roles/delete-multiple', [RoleController::class, 'deleteMultiple'])->middleware('auth:api');
 
     Route::apiResource('permissions',PermissionController::class);

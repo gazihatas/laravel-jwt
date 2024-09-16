@@ -2,8 +2,10 @@
 
 namespace App\Services\Role\Implementations;
 
+use App\Data\PaginationData;
 use App\Data\RoleData;
 use App\Repositories\Role\Contracts\RoleRepositoryInterface;
+use App\Services\Pagination\PaginationService;
 use App\Services\Role\Contracts\RoleServiceInterface;
 use Illuminate\Support\Collection;
 
@@ -11,10 +13,19 @@ class RoleService implements RoleServiceInterface
 {
 
     protected $roleRepository;
+    protected $paginationService;
 
-    public function __construct(RoleRepositoryInterface $roleRepository)
+    public function __construct(RoleRepositoryInterface $roleRepository,PaginationService $paginationService)
     {
         $this->roleRepository = $roleRepository;
+        $this->paginationService = $paginationService;
+    }
+
+    public function getPaginatedRoles(int $perPage, int $page): PaginationData
+    {
+        $query = $this->roleRepository->getQueryForRoles();
+
+        return $this->paginationService->paginate($query, $perPage, $page);
     }
 
     public function getAllRoles(): Collection
