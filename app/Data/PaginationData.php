@@ -11,7 +11,7 @@ class PaginationData
         public int $perPage,
         public int $total,
         public int $lastPage,
-        public array $item
+        public array $items
     ){}
 
     public static function fromPaginator(LengthAwarePaginator $paginator): self
@@ -32,7 +32,24 @@ class PaginationData
             'per_page' => $this->perPage,
             'total' => $this->total,
             'last_page' => $this->lastPage,
-            'items' => $this->item
+            'items' => $this->items
+        ];
+    }
+
+    public function toMetaArray(): array
+    {
+        return [
+            'current_page' => $this->currentPage,
+            'per_page' => $this->perPage,
+            'total' => $this->total,
+            'last_page' => $this->lastPage
+        ];
+    }
+
+    public function toDataArray(string $key = 'items'): array
+    {
+        return [
+            $key => $this->items
         ];
     }
 }

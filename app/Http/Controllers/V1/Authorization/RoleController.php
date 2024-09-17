@@ -38,7 +38,7 @@ class RoleController extends Controller
             $page = $request->input('page', 1);
 
             $paginationData = $this->roleService->getPaginatedRoles($perPage, $page);
-            return $this->successResponse($paginationData->toArray(), 'Roles retrieved successfully');
+            return $this->successResponse($paginationData->toMetaArray(),$paginationData->toDataArray('roles'), 'Roles retrieved successfully');
 
         } catch (\Exception $e) {
             Log::error('Error retrieving roles: ' . $e->getMessage());
