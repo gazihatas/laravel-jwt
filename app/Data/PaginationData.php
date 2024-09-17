@@ -11,7 +11,7 @@ class PaginationData
         public int $perPage,
         public int $total,
         public int $lastPage,
-        public array $data
+        public array $item
     ){}
 
     public static function fromPaginator(LengthAwarePaginator $paginator): self
@@ -32,7 +32,7 @@ class PaginationData
             'per_page' => $this->perPage,
             'total' => $this->total,
             'last_page' => $this->lastPage,
-            'data' => $this->data
+            'items' => $this->item
         ];
     }
 }
