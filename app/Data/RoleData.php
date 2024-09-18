@@ -2,6 +2,7 @@
 
 namespace App\Data;
 
+use App\Enums\RoleType;
 use App\Http\Requests\Api\Authorization\CreateRoleRequest;
 use App\Http\Requests\Api\Role\DeleteRoleRequest;
 use App\Http\Requests\Api\Role\UpdateRoleRequest;
@@ -36,6 +37,15 @@ class RoleData
             null,
             null,
             $request->input('role_ids', [])
+        );
+    }
+
+    public static function fromEnum(RoleType $roleType, array $permissions = []):self
+    {
+        return new self(
+            null,
+            $roleType->value,
+            $permissions
         );
     }
 

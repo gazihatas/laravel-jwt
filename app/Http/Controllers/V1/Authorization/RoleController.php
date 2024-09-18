@@ -34,10 +34,11 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 15);
+            $perPage = $request->input('per_page', 2);
             $page = $request->input('page', 1);
 
             $paginationData = $this->roleService->getPaginatedRoles($perPage, $page);
+
             return $this->successResponse($paginationData->toMetaArray(),$paginationData->toDataArray('roles'), 'Roles retrieved successfully');
 
         } catch (\Exception $e) {
