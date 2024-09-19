@@ -8,7 +8,7 @@ class UserData
         public int|string|null $id,
         public string $name,
         public string $email,
-        public string $password
+        public ?string $password = null
     )
     {}
 
