@@ -253,7 +253,9 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'email' => $user->email,
             ]);
-            return $this->successResponse($user, 'User is authenticated.');
+            $userData = new UserData(id : $user->id,name: $user->name,email: $user->email);
+
+            return $this->successResponse(['user' => $userData->toArray()], 'User is authenticated.');
         }
 
         return $this->errorResponse('Unable to authenticate user.', [], 401);
