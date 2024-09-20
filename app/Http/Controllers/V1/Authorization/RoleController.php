@@ -15,6 +15,19 @@ use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * @OA\Schema(
+ *     schema="Role",
+ *     type="object",
+ *     title="Role",
+ *     description="Role model",
+ *     required={"id", "name"},
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="name", type="string", example="Administrator"),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
 class RoleController extends Controller
 {
     use ApiResponseTrait;
@@ -29,7 +42,35 @@ class RoleController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/v1/roles",
+     *     summary="Get all roles",
+     *     tags={"Roles"},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of roles per page",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of roles",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Role")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
      */
     public function index(Request $request)
     {
@@ -48,7 +89,31 @@ class RoleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/v1/roles",
+     *     summary="Create a new role",
+     *     tags={"Roles"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="Administrator")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Role created successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Role")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
      */
     public function store(CreateRoleRequest $request)
     {
@@ -63,7 +128,31 @@ class RoleController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/v1/roles/{id}",
+     *     summary="Get a role by ID",
+     *     tags={"Roles"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Role ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Role retrieved successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/Role")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Role not found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
      */
     public function show(int $id)
     {
@@ -77,7 +166,37 @@ class RoleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/v1/roles/{id}",
+     *     summary="Update a role",
+     *     tags={"Roles"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Role ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="Moderator")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Role updated successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Role not found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
      */
     public function update(UpdateRoleRequest $request, int $id)
     {
@@ -93,8 +212,32 @@ class RoleController extends Controller
         }
     }
 
+
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/v1/roles/{id}",
+     *     summary="Delete a role",
+     *     tags={"Roles"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Role ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Role deleted successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Role not found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
      */
     public function destroy(int $id = null)
     {
@@ -111,6 +254,32 @@ class RoleController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/roles/delete-multiple",
+     *     summary="Delete multiple roles",
+     *     tags={"Roles"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"role_ids"},
+     *             @OA\Property(property="role_ids", type="array", @OA\Items(type="integer"), example={1, 2, 3})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Roles deleted successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="No role ID provided"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
+     */
     public function deleteMultiple(DeleteRoleRequest $request)
     {
         try {
