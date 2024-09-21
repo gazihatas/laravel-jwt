@@ -25,7 +25,7 @@
                     "Authentication"
                 ],
                 "summary": "Register a new user",
-                "operationId": "9cf29cf337b1a1d565603223a13036b4",
+                "operationId": "49116d1f2695706d53b9e5fbab042010",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -124,7 +124,7 @@
                     "Authentication"
                 ],
                 "summary": "Login a user",
-                "operationId": "4f9ab8567202f849a4206bc7e9b6d385",
+                "operationId": "ad6912b6444da4d8eb7f1a2606471360",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -201,7 +201,7 @@
                     "Authentication"
                 ],
                 "summary": "Logout the user",
-                "operationId": "1cb29d1c15d945905bd1c10e70623919",
+                "operationId": "e1fac1646c2669c795be627532b4ebb4",
                 "responses": {
                     "200": {
                         "description": "Successfully logged out",
@@ -233,7 +233,7 @@
                     "Authentication"
                 ],
                 "summary": "Refresh JWT token",
-                "operationId": "795bbc6eba9511c96f460781848f5826",
+                "operationId": "35f6ad01f161a84529b10d72f9326bc6",
                 "responses": {
                     "200": {
                         "description": "Token refreshed successfully",
@@ -273,7 +273,7 @@
                     "Authentication"
                 ],
                 "summary": "Verify authenticated user",
-                "operationId": "d6af7b5e8e9986e44cec2988b09eea13",
+                "operationId": "faf604a4a63d7047dd7e26abbcbabc43",
                 "responses": {
                     "200": {
                         "description": "User is authenticated",
@@ -321,6 +321,318 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/v1/roles": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Get all roles",
+                "operationId": "994a40cc4cf2313c6818ccbb105ddf84",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of roles per page",
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of roles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Role"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Create a new role",
+                "operationId": "6c5ad421c13772cb0e2062781d4c83ed",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Administrator"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Role created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Role"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/roles/{id}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Get a role by ID",
+                "operationId": "6d508d4437cd94c4f9949333c2dfb771",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Role ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Role retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Role"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Role not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Update a role",
+                "operationId": "a09fc54233ee5e65f542fa6871491f97",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Role ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Moderator"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Role updated successfully"
+                    },
+                    "404": {
+                        "description": "Role not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Delete a role",
+                "operationId": "486a79e28143e85d44b342fa3d8b5f13",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Role ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Role deleted successfully"
+                    },
+                    "404": {
+                        "description": "Role not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/roles/delete-multiple": {
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Delete multiple roles",
+                "operationId": "e2ef7f4d572dd193f75a7abba625a749",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "role_ids"
+                                ],
+                                "properties": {
+                                    "role_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Roles deleted successfully"
+                    },
+                    "400": {
+                        "description": "No role ID provided"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/roles/{id}/permissions": {
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Assign permissions to a role",
+                "operationId": "7a043af089e0dc1a00bc63bce745ba1b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Role ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "permissions"
+                                ],
+                                "properties": {
+                                    "permissions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "create",
+                                            "edit"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Permissions assigned successfully"
+                    },
+                    "404": {
+                        "description": "Role not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/api/v1/users/me": {
@@ -595,6 +907,33 @@
                     }
                 },
                 "type": "object"
+            },
+            "Role": {
+                "title": "Role",
+                "description": "Role model",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Administrator"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -609,6 +948,10 @@
         {
             "name": "Authentication",
             "description": "API Endpoints for Authentication"
+        },
+        {
+            "name": "Roles",
+            "description": "Roles"
         },
         {
             "name": "Users",

@@ -301,7 +301,37 @@ class RoleController extends Controller
     }
 
     /**
-     * Role izin atama işlemi.
+     * @OA\Post(
+     *     path="/api/v1/roles/{id}/permissions",
+     *     summary="Assign permissions to a role",
+     *     tags={"Roles"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Role ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"permissions"},
+     *             @OA\Property(property="permissions", type="array", @OA\Items(type="string"), example={"create", "edit"})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Permissions assigned successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Role not found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     )
+     * )
      */
     public function assignPermissionToRole(AssignPermissionRequest $request, int $roleId)
     {

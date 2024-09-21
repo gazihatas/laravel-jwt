@@ -5,6 +5,19 @@ namespace App\Http\Controllers\V1\Authorization;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Schema(
+ *     schema="Permission",
+ *     type="object",
+ *     title="Permission",
+ *     description="Permission model",
+ *     required={"id", "name"},
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="name", type="string", example="create_post"),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
 class PermissionController extends Controller
 {
     /**
